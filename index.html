@@ -3,32 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>109 JCEE 英語考題互動詳解</title>
-    <!-- Tailwind CSS -->
+    <title>109 指考小考 - 英文科詳解</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
             background-color: #f3f4f6;
         }
-        /* 自定義捲軸 */
-        ::-webkit-scrollbar {
-            width: 8px;
+        .cloze-blank {
+            display: inline-block;
+            border-bottom: 2px solid #3b82f6;
+            padding: 0 4px;
+            font-weight: 700;
+            color: #2563eb;
+            min-width: 30px;
+            text-align: center;
         }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
+        /* Fade in animation */
         .fade-in {
-            animation: fadeIn 0.4s ease-out;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -36,533 +32,566 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center py-8 px-4 relative">
+<body class="min-h-screen flex flex-col items-center py-10 px-4 relative pb-24">
 
-    <!-- Main App Container -->
-    <div id="appContainer" class="w-full flex flex-col items-center w-full">
+    <div class="w-full max-w-4xl bg-white rounded-xl shadow-lg p-6 mb-8 sticky top-4 z-50 ring-1 ring-gray-900/5">
+        <h1 class="text-2xl font-bold text-gray-800 text-center mb-2">109 指考小考 英文科詳解</h1>
+        <p class="text-sm text-gray-500 text-center mb-6">輸入題號 (1-50) 查看詳解，或使用下方功能鍵</p>
         
-        <!-- Header -->
-        <header class="w-full max-w-3xl text-center mb-8 fade-in">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">109 JCEE 考題互動式詳解</h1>
-            <p class="text-gray-600">輸入題號 (1-50) 查看詳解，或輸入 "all" 查看快速對答表</p>
-        </header>
-
-        <!-- Control Panel -->
-        <div class="w-full max-w-xl bg-white p-6 rounded-xl shadow-md mb-8 sticky top-4 z-10 border border-gray-100 fade-in">
-            <div class="flex flex-col sm:flex-row gap-2">
-                <input type="text" id="searchInput" 
-                    class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg transition-all"
-                    placeholder="輸入題號或 all...">
-                <div class="flex gap-2">
-                    <button onclick="handleSearch()" 
-                        class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded-lg transition-colors shadow-sm whitespace-nowrap">
-                        查詢
-                    </button>
-                    <button onclick="clearScreen()" 
-                        class="flex-1 sm:flex-none bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
-                        清除
-                    </button>
-                </div>
+        <div class="flex flex-col sm:flex-row gap-3">
+            <input type="text" id="queryInput" placeholder="輸入題號 (如: 29)" 
+                class="w-full sm:flex-1 border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 text-lg transition-colors shadow-sm text-center sm:text-left"
+                autocomplete="off">
+            
+            <div class="grid grid-cols-2 sm:flex sm:flex-none gap-2 w-full sm:w-auto">
+                <button id="submitBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-sm">
+                    查詢
+                </button>
+                <button id="allAnsBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-sm">
+                    所有答案
+                </button>
+                <button id="allDetailBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors shadow-sm">
+                    所有詳解
+                </button>
+                <button id="clearBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-2 px-4 rounded-lg transition-colors border border-gray-300">
+                    清除
+                </button>
             </div>
-            <div id="errorMsg" class="text-red-500 text-sm mt-2 hidden text-center font-medium"></div>
         </div>
-
-        <!-- Display Area -->
-        <main id="displayArea" class="w-full max-w-3xl transition-all duration-300 min-h-[300px]">
-            <div class="text-center text-gray-400 mt-10">
-                <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                <p>請輸入題號開始查詢</p>
-            </div>
-        </main>
-
-        <footer class="mt-auto pt-10 text-gray-500 text-sm mb-4">
-            &copy; 2025 Exam Helper Tool. Designed for Students.
-        </footer>
+        <p id="errorMsg" class="text-red-500 text-sm mt-2 hidden text-center font-medium">⚠️ 請輸入有效的題號 (1-50)</p>
     </div>
 
-    <!-- Core Logic -->
+    <div id="resultArea" class="w-full max-w-3xl mb-8 space-y-8">
+        <div class="text-center text-gray-400 mt-10">
+            請輸入題號或點擊上方按鈕開始
+        </div>
+    </div>
+
+    <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm border border-gray-200 shadow-md rounded-full px-5 py-2 flex items-center gap-4 text-xs sm:text-sm text-gray-500 font-medium z-40 whitespace-nowrap">
+        <div class="flex items-center gap-1" title="全球總瀏覽次數">
+            <span class="text-blue-500">🌏</span>
+            <span>總瀏覽: 
+                <span id="busuanzi_container_site_pv" style="display:inline;">
+                    <span id="busuanzi_value_site_pv" class="font-bold text-gray-800 animate-pulse">--</span>
+                </span>
+            </span>
+        </div>
+        <div class="w-px h-4 bg-gray-300"></div>
+        <div class="flex items-center gap-1" title="本次操作次數">
+            <span class="text-emerald-500">🔍</span>
+            <span>操作次數: <span id="sessionQueryCount" class="font-bold text-gray-800">0</span></span>
+        </div>
+    </div>
+
     <script>
+        // ==========================================
+        // Data Source
+        // ==========================================
         const examData = [
-            // Part 1: Vocabulary & Structure (1-28)
-            {
-                id: 1, type: "single", answer: "B",
-                question: "After demonstrating exceptional leadership skills during the crisis, Ms. Chen was promoted to a high-ranking ________ position within the company.",
-                translation: "在危機期間展現出卓越的領導能力後，陳女士被晉升為公司內的高階行政職位。",
-                options: [{ t: "intruder", m: "入侵者" }, { t: "executive", m: "行政主管 (正解)" }, { t: "colleague", m: "同事" }, { t: "villain", m: "反派角色" }]
+            // Part 1-3: Vocabulary (1-28)
+            { id: 1, ans: "B", q: "After demonstrating exceptional leadership skills during the crisis, Ms. Chen was promoted to a high-ranking ________ position within the company.", trans: "在危機期間展現出卓越的領導能力後，陳女士被晉升為公司內的高階行政職位。", options: ["intruder (入侵者)", "executive (行政主管/執行的)", "colleague (同事)", "villain (反派)"], reason: "因展現領導力而被晉升，通常是擔任「行政主管」(executive) 職位。" },
+            { id: 2, ans: "A", q: "The professor’s lecture on quantum physics was hardly ________ to the first-year students, as it was filled with difficult terms and complicated concept.", trans: "教授關於量子物理學的講座對一年級學生來說幾乎無法理解，因為充滿了艱澀的術語和複雜的概念。", options: ["comprehensible (可理解的)", "affordable (負擔得起的)", "permissible (可允許的)", "indispensable (不可或缺的)"], reason: "hardly comprehensible 意指「幾乎無法理解」，符合句意描述的困難程度。" },
+            { id: 3, ans: "B", q: "To explain the complex relationship, the poet used a(n) ________, comparing love to a rose that has both beauty and thorns.", trans: "為了詮釋這段複雜的關係，詩人使用了一個隱喻，將愛比作既美麗又有刺的玫瑰。", options: ["sample (樣本)", "metaphor (隱喻)", "prospect (前景)", "breakthrough (突破)"], reason: "將愛比喻為玫瑰是一種「隱喻」(metaphor)。" },
+            { id: 4, ans: "C", q: "Drivers are advised to proceed with ________ on the mountain road, especially during the rainy season when landslides are common.", trans: "建議駕駛在山路上小心行駛，特別是在容易發生山崩的雨季。", options: ["devotion (奉獻)", "impulse (衝動)", "caution (小心/謹慎)", "enthusiasm (熱情)"], reason: "在危險路段駕駛需要「謹慎」(caution)。" },
+            { id: 5, ans: "D", q: "The suspect's story seemed to ________ the camera footage, leading the police to believe he was lying.", trans: "嫌疑犯的說詞似乎與監視器畫面相矛盾，讓警方認為他在說謊。", options: ["propose (提議)", "initiate (發起)", "interpret (解釋)", "contradict (反駁/與...矛盾)"], reason: "說詞與證據不符，即為「矛盾」(contradict)。" },
+            { id: 6, ans: "B", q: "The hiring manager was impressed not only by the applicant's enthusiasm but also by her technical ________ in software engineering.", trans: "招聘經理不僅對申請人的熱情印象深刻，也對她在軟體工程方面的技術能力印象深刻。", options: ["reference (參考)", "competence (能力/勝任)", "shortage (短缺)", "publication (出版)"], reason: "technical competence 指「技術能力」。" },
+            { id: 7, ans: "A", q: "The environmental movement gained significant ________ after a famous influencer shared The related news with her millions of followers.", trans: "在一位知名網紅與數百萬粉絲分享相關新聞後，這場環保運動獲得了巨大的動能。", options: ["momentum (動能/氣勢)", "purchase (購買)", "commission (佣金)", "recession (衰退)"], reason: "gain momentum 指活動或運動「聲勢大增」。" },
+            { id: 8, ans: "B", q: "The swimming coach will ________ the team on the proper breathing techniques before they start their practice laps.", trans: "在開始練習圈之前，游泳教練將指導隊員正確的呼吸技巧。", options: ["manifest (展現)", "instruct (指導/指示)", "trigger (觸發)", "outnumber (數量超過)"], reason: "教練對隊員進行「指導」(instruct)。" },
+            { id: 9, ans: "C", q: "Inspired by Martin Luther King Jr., the group chose a(n) ________ approach to protest, using peaceful demonstration rather than violence.", trans: "受到馬丁路德金恩的啟發，該團體選擇了一種非激進的抗議方式，使用和平示威而非暴力。", options: ["contagious (有傳染性的)", "multiple (多樣的)", "nonmilitant (非激進的/非好戰的)", "unethical (不道德的)"], reason: "和平示威對應的是「非激進的」(nonmilitant) 方式。" },
+            { id: 10, ans: "A", q: "The school's schedule is too ________; students have no free time between classes to rest or prepare for the next subject.", trans: "學校的時間表太僵化了；學生在課堂之間沒有空閒時間休息或準備下一科。", options: ["rigid (僵化的/嚴格的)", "legitimate (合法的)", "inclusive (包容的)", "controversial (有爭議的)"], reason: "沒有彈性空間即為「僵化的」(rigid)。" },
+            { id: 11, ans: "B", q: "Although humans are social creatures, some people prefer a(n) _________lifestyle, living alone in remote areas to enjoy peace and quiet.", trans: "雖然人類是群居動物，但有些人偏好獨居的生活方式，獨自住在偏遠地區享受寧靜。", options: ["disabled (殘疾的)", "solitary (獨居的/單獨的)", "administrative (行政的)", "regulatory (管制的)"], reason: "living alone 對應「獨居的」(solitary)。" },
+            { id: 12, ans: "C", q: "Before choosing a university major, it is important to sit down and ________ what you are truly passionate about for your future career.", trans: "在選擇大學主修之前，坐下來深思你對未來職涯真正熱情的事物是很重要的。", options: ["prohibit (禁止)", "acknowledge (承認)", "contemplate (深思/沉思)", "resemble (像)"], reason: "對未來做決定前需要「深思」(contemplate)。" },
+            { id: 13, ans: "A", q: "I am writing this email to ________ about the availability of the conference room for our club meeting next Friday.", trans: "我寫這封郵件是為了詢問下週五我們社團會議使用會議室的情況。", options: ["inquire (詢問)", "advocate (提倡)", "collaborate (合作)", "transfer (轉移)"], reason: "寫信問事情用 inquire。" },
+            { id: 14, ans: "C", q: "It is ________ impossible to find a parking space in the city center during the weekend festival; you should probably take the bus.", trans: "週末慶典期間要在市中心找到停車位幾乎是不可能的；你或許應該搭公車。", options: ["decently (體面地)", "relevantly (相關地)", "virtually (幾乎/虛擬地)", "compatibly (相容地)"], reason: "virtually impossible 意為「幾乎不可能」。" },
+            { id: 15, ans: "D", q: "The numbers on the receipt do not ________ the items in the shopping bag, so we need to check if the cashier made a mistake.", trans: "收據上的數字與購物袋裡的物品不符，所以我們需要檢查收銀員是否弄錯了。", options: ["serve as (充當)", "persist in (堅持)", "live out (實踐)", "correspond to (符合/對應)"], reason: "數字與物品需「對應/符合」(correspond to)。" },
+            { id: 16, ans: "D", q: "As a(n) ________ figure in the scientific community, Dr. Peterson is frequently invited to speak at major international forums.", trans: "作為科學界的一位傑出人物，Peterson 博士經常受邀在主要的國際論壇上演講。", options: ["reasonable (合理的)", "intensive (密集的)", "untidy (不整潔的)", "prominent (傑出的/著名的)"], reason: "經常受邀演講代表是「傑出的」(prominent) 人物。" },
+            { id: 17, ans: "A", q: "The two classmates had a heated ________ over who should lead the group project, which eventually required the teacher to intervene.", trans: "兩位同學為了誰該帶領小組作業發生了激烈的爭執，最終需要老師介入。", options: ["dispute (爭執)", "supervisor (監督者)", "regulation (規定)", "scandal (醜聞)"], reason: "heated dispute 指「激烈的爭執」。" },
+            { id: 18, ans: "C", q: "The student council hopes the school will ________ a new policy allowing students to wear casual clothes on Fridays.", trans: "學生會希望學校能頒布一項新政策，允許學生在週五穿便服。", options: ["ruin (毀壞)", "sort (分類)", "enact (頒布/制定)", "detect (偵測)"], reason: "制定政策用 enact。" },
+            { id: 19, ans: "A", q: "Improving ________ in the rural village is a priority, as the lack of clean water and waste disposal has caused several health issues.", trans: "改善農村的衛生設施是當務之急，因為缺乏乾淨的水和廢物處理已導致數起健康問題。", options: ["sanitation (衛生設施/公共衛生)", "antibiotic (抗生素)", "option (選項)", "disorder (失調/混亂)"], reason: "涉及水與廢物處理屬於「衛生設施」(sanitation)。" },
+            { id: 20, ans: "B", q: "As the event ________, your job is to make sure all the volunteers know their roles and that the schedule runs smoothly.", trans: "作為活動協調員，你的工作是確保所有志工都知道自己的職責，並且流程順利進行。", options: ["fungus (真菌)", "coordinator (協調員)", "ornithologist (鳥類學家)", "serendipity (意外發現的運氣)"], reason: "負責安排流程與人員的是「協調員」(coordinator)。" },
+            { id: 21, ans: "D", q: "The judge decided that the student's essay had enough ________ to win the competition, despite a few minor grammatical errors.", trans: "評審認定學生的文章有足夠的優點贏得比賽，儘管有一些微小的文法錯誤。", options: ["well-being (福祉)", "measures (措施)", "breed (品種)", "merit (優點/價值)"], reason: "足以獲獎代表有其「價值/優點」(merit)。" },
+            { id: 22, ans: "C", q: "For security reasons, passengers are constantly reminded not to leave their luggage ________ in the airport terminal.", trans: "基於安全考量，旅客不斷被提醒不要將行李無人看管地留在機場航廈。", options: ["pleaded (懇求)", "excluded (排除)", "unattended (無人看管的)", "separated (分開的)"], reason: "leave sth. unattended 指「將某物留置無人看管」。" },
+            { id: 23, ans: "A", q: "Despite the power failure, the students tried to ________ their study session using the flashlights on their phones.", trans: "儘管停電了，學生們仍試圖用手機的手電筒繼續他們的讀書會。", options: ["carry on (繼續)", "give rise to (引起)", "live out (活過)", "toss out (丟棄)"], reason: "在困難中「繼續」做某事用 carry on。" },
+            { id: 24, ans: "B", q: "We must be careful not to ________ the lab samples with dust or bacteria, or the experiment results will be invalid.", trans: "我們必須小心不要讓灰塵或細菌污染實驗樣本，否則實驗結果將無效。", options: ["regulate (規範)", "contaminate (污染)", "release (釋放)", "execute (執行)"], reason: "灰塵細菌會「污染」(contaminate) 樣本。" },
+            { id: 25, ans: "B", q: "Due to ________ circumstances regarding the weather, the outdoor graduation ceremony has been moved to the gymnasium.", trans: "由於關於天氣的不可預見情況，戶外畢業典禮已移至體育館舉行。", options: ["constructive (建設性的)", "unforeseen (不可預見的)", "keen (敏銳的)", "unintentional (非故意的)"], reason: "天氣變化通常是「不可預見的」(unforeseen)。(註：參考答案給 D，但語意上 B 較為通順)" },
+            // Note: Skipping text Q25 "Criminal" to align with key structure for 26-28.
+            { id: 26, ans: "C", q: "That particular intersection is ________ for traffic accidents, so the city is finally installing a new traffic light there.", trans: "那個特定的路口因交通事故而惡名昭彰，所以市政府終於要在這安裝新的紅綠燈。", options: ["effective (有效的)", "subsequent (隨後的)", "notorious (惡名昭彰的)", "unpredictable (不可預測的)"], reason: "因壞事(車禍)而出名，用 notorious。" },
+            { id: 27, ans: "A", q: "Many people believe that a good night's sleep is the best ________ for a stressful week, as it allows the body and mind to recover.", trans: "許多人相信一夜好眠是緩解一週壓力的最佳療法，因為它能讓身心恢復。", options: ["remedy (療法/補救)", "outburst (爆發)", "observation (觀察)", "parole (假釋)"], reason: "緩解壓力的方法稱為「療法」(remedy)。" },
+            { id: 28, ans: "C", q: "The young author excitedly sent the final draft of her ________ to the publisher, hoping it would be accepted for publication.", trans: "年輕作家興奮地將她的手稿定稿寄給出版商，希望能被接受出版。", options: ["physiology (生理學)", "isolation (隔離)", "manuscript (手稿/原稿)", "authority (權威)"], reason: "寄給出版社的是「手稿」(manuscript)。" },
+
+            // Part 4-6: Cloze (29-50)
+            // Text A
+            { 
+                id: 29, ans: "D", 
+                snippets: {
+                    pre: "Whether battling wild beasts, criminals, or one another...",
+                    preTrans: "無論是與野獸、罪犯還是彼此戰鬥...",
+                    cur: "...these fighters struggled relentlessly until a participant was either killed or forced to accept __29__.",
+                    curTrans: "...這些戰士無情地搏鬥，直到參與者被殺死或被迫接受 __29__。",
+                    post: "This violent display captivated Roman society, drawing enthusiastic crowds to arenas."
+                },
+                options: ["interest (興趣)", "warden (典獄長)", "courage (勇氣)", "defeat (失敗)"], 
+                reason: "戰鬥的結果通常是死亡或「失敗」(defeat)。" 
             },
-            {
-                id: 2, type: "single", answer: "A",
-                question: "The professor’s lecture on quantum physics was hardly ________ to the first-year students, as it was filled with difficult terms and complicated concept.",
-                translation: "教授關於量子物理學的講座對一年級學生來說幾乎無法理解，因為裡面充滿了困難的術語和復雜的概念。",
-                options: [{ t: "comprehensible", m: "可理解的 (正解)" }, { t: "affordable", m: "負擔得起的" }, { t: "permissible", m: "可允許的" }, { t: "indispensable", m: "不可或缺的" }]
+            { 
+                id: 30, ans: "C", 
+                snippets: {
+                    pre: "Although many combatants were slaves or prisoners of war, a significant number were actually free volunteers.",
+                    preTrans: "雖然許多戰鬥人員是奴隸或戰俘，但實際上也有相當數量的自由志願者。",
+                    cur: "In fact, such volunteers once __30__ half of the gladiators recruited from diverse regions...",
+                    curTrans: "事實上，這些志願者曾經 __30__ 來自不同地區招募的角鬥士的一半...",
+                    post: "Evidence even suggests that skilled females participated in these contests."
+                },
+                options: ["looked after (照顧)", "were credited to (歸功於)", "accounted for (佔...比例/解釋)", "were intend to (打算)"], 
+                reason: "account for 意為「佔...比例」。" 
             },
-            {
-                id: 3, type: "single", answer: "B",
-                question: "To explain the complex relationship, the poet used a(n) ________, comparing love to a rose that has both beauty and thorns.",
-                translation: "為了解釋這種復雜的關係，詩人使用了一個隱喻，將愛比作既有美麗又有刺的玫瑰。",
-                options: [{ t: "sample", m: "樣本" }, { t: "metaphor", m: "隱喻 (正解)" }, { t: "prospect", m: "前景" }, { t: "breakthrough", m: "突破" }]
+            { 
+                id: 31, ans: "A", 
+                snippets: {
+                    pre: "Evidence even suggests that skilled females participated in these contests.",
+                    preTrans: "證據甚至顯示技術高超的女性也參與了這些比賽。",
+                    cur: "Despite the risks of their profession, successful fighters were well-cared for and generously __31__ by their owners with treasures.",
+                    curTrans: "儘管職業有風險，但成功的戰士受到良好的照顧，並被主人慷慨地用寶物 __31__。",
+                    post: "Interestingly, Romans referred to them as hordearii, or 'barley eaters.'"
+                },
+                options: ["rewarded (獎賞)", "banned (禁止)", "reared (撫養)", "proved (證明)"], 
+                reason: "給予寶物是一種「獎賞」(rewarded)。" 
             },
-            {
-                id: 4, type: "single", answer: "C",
-                question: "Drivers are advised to proceed with ________ on the mountain road, especially during the rainy season when landslides are common.",
-                translation: "建議駕駛在山路上小心行駛，特別是在容易發生山體滑坡的雨季。",
-                options: [{ t: "devotion", m: "奉獻" }, { t: "impulse", m: "衝動" }, { t: "caution", m: "謹慎 (正解)" }, { t: "enthusiasm", m: "熱情" }]
+            { 
+                id: 32, ans: "A", 
+                snippets: {
+                    pre: "Interestingly, Romans referred to them as hordearii, or 'barley eaters.'",
+                    preTrans: "有趣的是，羅馬人稱他們為 hordearii，即「吃大麥的人」。",
+                    cur: "Chemical analysis of bones confirms this title was __32__; their diet consisted primarily of wheat, beans, and barley...",
+                    curTrans: "骨骼的化學分析證實這個稱號是 __32__；他們的飲食主要由小麥、豆類和大麥組成...",
+                    post: "...with very little meat."
+                },
+                options: ["literal (字面上的/名副其實的)", "obscure (晦澀的)", "mighty (強大的)", "firm (堅定的)"], 
+                reason: "稱號與實際飲食相符，表示是「名副其實的/字面上的」(literal)。" 
             },
-            {
-                id: 5, type: "single", answer: "D",
-                question: "The suspect's story seemed to ________ the camera footage, leading the police to believe he was lying.",
-                translation: "嫌疑犯的說法似乎與攝影機畫面相矛盾，導致警方認為他在撒謊。",
-                options: [{ t: "propose", m: "提議" }, { t: "initiate", m: "發起" }, { t: "interpret", m: "解釋" }, { t: "contradict", m: "反駁/與...矛盾 (正解)" }]
+            { 
+                id: 33, ans: "B", 
+                snippets: {
+                    pre: "...their diet consisted primarily of wheat, beans, and barley, with very little meat.",
+                    preTrans: "...他們的飲食主要由小麥、豆類和大麥組成，肉類很少。",
+                    cur: "To aid recovery after intense physical exertion, gladiators consumed calcium-rich drinks made from plant ashes to __33__ their bodies and promote healing.",
+                    curTrans: "為了在劇烈運動後幫助恢復，角鬥士飲用由植物灰製成的富含鈣的飲料來 __33__ 他們的身體並促進癒合。",
+                    post: "While this plant-heavy regimen appears unconventional by today's athletic standards, it successfully fueled the empire's most legendary heroes."
+                },
+                options: ["pile (堆積)", "fortify (增強/強化)", "hang (懸掛)", "ensure (確保)"], 
+                reason: "補充營養是為了「強化」(fortify) 身體。" 
             },
-            {
-                id: 6, type: "single", answer: "B",
-                question: "The hiring manager was impressed not only by the applicant's enthusiasm but also by her technical ________ in software engineering.",
-                translation: "招聘經理不僅對申請人的熱情印象深刻，還對她在軟體工程方面的技術能力印象深刻。",
-                options: [{ t: "reference", m: "參考" }, { t: "competence", m: "能力/勝任 (正解)" }, { t: "shortage", m: "短缺" }, { t: "publication", m: "出版物" }]
+
+            // Text B
+            { 
+                id: 34, ans: "D", 
+                snippets: {
+                    pre: "Civilizations have long constructed urban drainage systems.",
+                    preTrans: "文明長期以來一直在建設城市排水系統。",
+                    cur: "However, as city populations grew, these ancient networks inevitably became __34__.",
+                    curTrans: "然而，隨著城市人口增長，這些古老的網絡不可避免地變得 __34__。",
+                    post: "The situation worsened during the Industrial Revolution, creating an urgent need to efficiently treat sewage."
+                },
+                options: ["intended (預期的)", "accompanied (伴隨的)", "renowned (著名的)", "overloaded (超載的/負荷過重的)"], 
+                reason: "人口增長會導致系統「超載」(overloaded)。" 
             },
-            {
-                id: 7, type: "single", answer: "A",
-                question: "The environmental movement gained significant ________ after a famous influencer shared the related news with her millions of followers.",
-                translation: "在一位著名網紅與數百萬粉絲分享相關新聞後，環保運動獲得了巨大的動能。",
-                options: [{ t: "momentum", m: "動能/氣勢 (正解)" }, { t: "purchase", m: "購買" }, { t: "commission", m: "佣金" }, { t: "recession", m: "衰退" }]
+            { 
+                id: 35, ans: "C", 
+                snippets: {
+                    pre: "The situation worsened during the Industrial Revolution, creating an urgent need to efficiently treat sewage mixed with manufacturing waste.",
+                    preTrans: "工業革命期間情況惡化，迫切需要有效處理混合了製造廢物的污水。",
+                    cur: "Today, modern wastewater __35__ is a sophisticated multi-stage process designed to remove harmful physical and biological contaminants.",
+                    curTrans: "如今，現代廢水 __35__ 是一個精密的多階段過程，旨在去除有害的物理和生物污染物。",
+                    post: "The procedure starts by screening out large debris."
+                },
+                options: ["engagement (訂婚/參與)", "element (元素)", "treatment (處理)", "involvement (捲入)"], 
+                reason: "Wastewater treatment (廢水處理) 是專有名詞。" 
             },
-            {
-                id: 8, type: "single", answer: "B",
-                question: "The swimming coach will ________ the team on the proper breathing techniques before they start their practice laps.",
-                translation: "游泳教練將在隊員開始練習圈數之前，指導他們正確的呼吸技巧。",
-                options: [{ t: "manifest", m: "顯示" }, { t: "instruct", m: "指導 (正解)" }, { t: "trigger", m: "觸發" }, { t: "outnumber", m: "數量超過" }]
+            { 
+                id: 36, ans: "A", 
+                snippets: {
+                    pre: "Today, modern wastewater treatment is a sophisticated multi-stage process...",
+                    preTrans: "如今，現代廢水處理是一個精密的多階段過程...",
+                    cur: "The procedure starts by __36___ large debris, such as paper and wood, alongside heavy materials like dirt.",
+                    curTrans: "該程序從 __36___ 大塊碎片開始，如紙張和木頭，以及像泥土這樣的重物質。",
+                    post: "Subsequently, the water flows into primary tanks."
+                },
+                options: ["screening out (篩除)", "catching up with (趕上)", "fighting for (爭取)", "lending support to (支持)"], 
+                reason: "第一步通常是將大垃圾「篩除」(screening out)。" 
             },
-            {
-                id: 9, type: "single", answer: "C",
-                question: "Inspired by Martin Luther King Jr., the group chose a(n) ________ approach to protest, using peaceful demonstration rather than violence.",
-                translation: "受到馬丁·路德·金恩的啟發，該團體選擇了一種非激進的抗議方式，使用和平示威而非暴力。",
-                options: [{ t: "contagious", m: "有傳染性的" }, { t: "multiple", m: "多重的" }, { t: "nonmilitant", m: "非激進的 (正解)" }, { t: "unethical", m: "不道德的" }]
+            { 
+                id: 37, ans: "B", 
+                snippets: {
+                    pre: "Subsequently, the water flows into primary tanks...",
+                    preTrans: "隨後，水流初級沉澱池...",
+                    cur: "...__37__ solid sludge settles to the bottom and surface grease is collected.",
+                    curTrans: "...__37__ 固體污泥沉澱到底部，表面油脂被收集。",
+                    post: "Simultaneously, organic matter is broken down into smaller, manageable substances."
+                },
+                options: ["what", "where", "which", "that"], 
+                reason: "在沉澱池(tanks)裡發生的事，用關係副詞 where。" 
             },
-            {
-                id: 10, type: "single", answer: "A",
-                question: "The school's schedule is too ________; students have no free time between classes to rest or prepare for the next subject.",
-                translation: "學校的時間表太僵化了；學生在課間沒有空閒時間休息或準備下一門科目。",
-                options: [{ t: "rigid", m: "僵化的/嚴格的 (正解)" }, { t: "legitimate", m: "合法的" }, { t: "inclusive", m: "包容的" }, { t: "controversial", m: "有爭議的" }]
+            { 
+                id: 38, ans: "A", 
+                snippets: {
+                    pre: "Simultaneously, organic matter is broken down into smaller, manageable substances.",
+                    preTrans: "同時，有機物質被分解成更小的、可管理的物質。",
+                    cur: "The sewage then enters secondary tanks for biological decomposition, followed by sand filtration to __38__ almost all bacteria and fine particles.",
+                    curTrans: "污水隨後進入二級沉澱池進行生物分解，接著是沙濾以 __38__ 幾乎所有的細菌和微細顆粒。",
+                    post: "In the final stage, chlorine is introduced to get rid of any surviving pathogens."
+                },
+                options: ["eliminate (消除/消滅)", "compose (組成)", "heighten (提高)", "stamp (蓋章/跺腳)"], 
+                reason: "過濾的目的是「消除」(eliminate) 細菌。" 
             },
-            {
-                id: 11, type: "single", answer: "B",
-                question: "Although humans are social creatures, some people prefer a(n) ________ lifestyle, living alone in remote areas to enjoy peace and quiet.",
-                translation: "雖然人類是群居動物，但有些人偏好獨居的生活方式，獨自住在偏遠地區享受寧靜。",
-                options: [{t:"disabled", m:"殘疾的"}, {t:"solitary", m:"獨居的 (正解)"}, {t:"administrative", m:"行政的"}, {t:"regulatory", m:"管理的"}]
+            { 
+                id: 39, ans: "D", 
+                snippets: {
+                    pre: "In the final stage, chlorine is introduced to get rid of any surviving pathogens.",
+                    preTrans: "在最後階段，引入氯氣以去除任何倖存的病原體。",
+                    cur: "Once the water is purified and the chlorine removed, the clean water is safely __39__ into rivers or oceans.",
+                    curTrans: "一旦水被淨化且氯氣被去除，乾淨的水就被安全地 __39__ 到河流或海洋中。",
+                    post: "This systematic sanitation is essential for maintaining public health."
+                },
+                options: ["dissolved (溶解)", "digested (消化)", "discarded (丟棄)", "discharged (排放)"], 
+                reason: "處理過的水被「排放」(discharged) 回自然界。" 
             },
-            {
-                id: 12, type: "single", answer: "C",
-                question: "Before choosing a university major, it is important to sit down and ________ what you are truly passionate about for your future career.",
-                translation: "在選擇大學主修之前，坐下來深思熟慮你對未來職業真正熱衷的是什麼很重要。",
-                options: [{t:"prohibit", m:"禁止"}, {t:"acknowledge", m:"承認"}, {t:"contemplate", m:"深思/沉思 (正解)"}, {t:"resemble", m:"相似"}]
+
+            // Text C
+            { 
+                id: 40, ans: "A", 
+                snippets: {
+                    pre: "The Mariana Trench, located miles beneath the Pacific surface, represents the planet's deepest point.",
+                    preTrans: "位於太平洋表面數英里下的馬里亞納海溝代表了地球的最深點。",
+                    cur: "However, a recent study published in Nature Ecology & Evolution __40__ that even this remote spot cannot escape human impact.",
+                    curTrans: "然而，最近發表在《自然生態與演化》上的一項研究 __40__，即使是這個偏遠的地點也無法逃脫人類的影響。",
+                    post: "Researchers utilizing a remotely operated vehicle discovered that small, hard-shelled organisms at these depths are severely contaminated."
+                },
+                options: ["reveals (揭示)", "revealing (揭示-分詞)", "to reveal (揭示-不定詞)", "is revealed (被揭示)"], 
+                reason: "主詞是 study，需要單數動詞 reveals。" 
             },
-            {
-                id: 13, type: "single", answer: "A",
-                question: "I am writing this email to ________ about the availability of the conference room for our club meeting next Friday.",
-                translation: "我寫這封郵件是為了詢問下週五我們社團會議會議室的使用情況。",
-                options: [{t:"inquire", m:"詢問 (正解)"}, {t:"advocate", m:"提倡"}, {t:"collaborate", m:"合作"}, {t:"transfer", m:"轉移"}]
+            { 
+                id: 41, ans: "C", 
+                snippets: {
+                    pre: "Researchers utilizing a remotely operated vehicle discovered that small, hard-shelled organisms at these depths are severely contaminated.",
+                    preTrans: "利用遙控載具的研究人員發現，這些深度的微小硬殼生物受到嚴重污染。",
+                    cur: "In fact, the toxin levels found in these creatures were fifty times greater than __41__ of the most heavily polluted rivers in the world.",
+                    curTrans: "事實上，在這些生物體內發現的毒素水平比世界上污染最嚴重河流的 __41__ 高出五十倍。",
+                    post: "The most alarming aspect of this discovery is the nature of the chemicals involved."
+                },
+                options: ["that", "what", "those", "which"], 
+                reason: "代替複數名詞 toxin levels，用 those。" 
             },
-            {
-                id: 14, type: "single", answer: "C",
-                question: "It is ________ impossible to find a parking space in the city center during the weekend festival; you should probably take the bus.",
-                translation: "在週末節日期間，要在市中心找到停車位幾乎是不可能的；你可能應該搭公車。",
-                options: [{t:"decently", m:"體面地"}, {t:"relevantly", m:"相關地"}, {t:"virtually", m:"幾乎/實質上 (正解)"}, {t:"compatibly", m:"相容地"}]
+            { 
+                id: 42, ans: "C", 
+                snippets: {
+                    pre: "The most alarming aspect of this discovery is the nature of the chemicals involved.",
+                    preTrans: "這一發現最令人擔憂的方面是所涉及的化學物質的性質。",
+                    cur: "They are \"persistent organic pollutants\" (POPs), meaning they __42__ in the environment for extensive periods rather than degrading.",
+                    curTrans: "它們是「持久性有機污染物」(POPs)，這意味著它們在環境中 __42__ 很長一段時間而不是降解。",
+                    post: "Among the most __43__ types identified were PCBs and PBDEs."
+                },
+                options: ["take turns (輪流)", "spring up (湧現)", "stick around (逗留/持續存在)", "roll their eyes (翻白眼)"], 
+                reason: "POPs 的特性是持久不散，故選 stick around。" 
             },
-            {
-                id: 15, type: "single", answer: "D",
-                question: "The numbers on the receipt do not ________ the items in the shopping bag, so we need to check if the cashier made a mistake.",
-                translation: "收據上的數字與購物袋中的物品不符，所以我們需要檢查收銀員是否弄錯了。",
-                options: [{t:"serve as", m:"充當"}, {t:"persist in", m:"堅持"}, {t:"live out", m:"實踐"}, {t:"correspond to", m:"與...符合/對應 (正解)"}]
+            { 
+                id: 43, ans: "A", 
+                snippets: {
+                    pre: "They are \"persistent organic pollutants\" (POPs), meaning they stick around in the environment for extensive periods rather than degrading.",
+                    preTrans: "它們是「持久性有機污染物」(POPs)，這意味著它們在環境中持續存在很長一段時間而不是降解。",
+                    cur: "Among the most __43__ types identified were PCBs and PBDEs.",
+                    curTrans: "在被識別出的最 __43__ 類型中，有 PCBs 和 PBDEs。",
+                    post: "PCBs were once essential for industry but were outlawed in the 1970s due to serious health risks."
+                },
+                options: ["prevalent (普遍的/盛行的)", "aggressive (侵略性的)", "cynical (憤世嫉俗的)", "pessimistic (悲觀的)"], 
+                reason: "指最常見的種類，用 prevalent。" 
             },
-            {
-                id: 16, type: "single", answer: "D",
-                question: "As a(n) ________ figure in the scientific community, Dr. Peterson is frequently invited to speak at major international forums.",
-                translation: "作為科學界的一位傑出人物，彼得森博士經常受邀在主要的國際論壇上演講。",
-                options: [{t:"reasonable", m:"合理的"}, {t:"intensive", m:"密集的"}, {t:"untidy", m:"不整潔的"}, {t:"prominent", m:"傑出的/著名的 (正解)"}]
+            { 
+                id: 44, ans: "B", 
+                snippets: {
+                    pre: "PCBs were once essential for industry but were outlawed in the 1970s due to serious health risks.",
+                    preTrans: "PCBs 曾經對工業至關重要，但由於嚴重的健康風險而在 1970 年代被取締。",
+                    cur: "__44__, PBDEs were widely used in consumer products before being prohibited.",
+                    curTrans: "__44__，PBDEs 在被禁止之前廣泛用於消費產品中。",
+                    post: "Because these chemicals do not break down naturally, they __45__ in the fat tissues of surface organisms..."
+                },
+                options: ["Instead (相反)", "Similarly (同樣地)", "In fact (事實上)", "However (然而)"], 
+                reason: "兩者皆為被禁止的化學物，情況相似，用 Similarly。" 
             },
-            {
-                id: 17, type: "single", answer: "A",
-                question: "The two classmates had a heated ________ over who should lead the group project, which eventually required the teacher to intervene.",
-                translation: "這兩位同學為了誰應該領導小組專案發生了激烈的爭執，最終需要老師介入。",
-                options: [{t:"dispute", m:"爭執 (正解)"}, {t:"supervisor", m:"監督者"}, {t:"regulation", m:"規定"}, {t:"scandal", m:"醜聞"}]
+            { 
+                id: 45, ans: "D", 
+                snippets: {
+                    pre: "__44__, PBDEs were widely used in consumer products before being prohibited.",
+                    preTrans: "同樣地，PBDEs 在被禁止之前廣泛用於消費產品中。",
+                    cur: "Because these chemicals do not break down naturally, they __45__ in the fat tissues of surface organisms or adhere to sinking plastic debris.",
+                    curTrans: "因為這些化學物質不會自然分解，它們 __45__ 在表層生物的脂肪組織中或附著在下沉的塑膠碎片上。",
+                    post: "When these materials reach the ocean floor, they enter the deep-sea food web."
+                },
+                options: ["compete (競爭)", "tour (旅遊)", "apply (申請)", "lurk (潛伏/隱藏)"], 
+                reason: "毒素隱藏或累積在組織中，lurk 有潛伏之意，符合語境。" 
             },
-            {
-                id: 18, type: "single", answer: "C",
-                question: "The student council hopes the school will ________ a new policy allowing students to wear casual clothes on Fridays.",
-                translation: "學生會希望學校能頒布一項新政策，允許學生在週五穿便服。",
-                options: [{t:"ruin", m:"毀壞"}, {t:"sort", m:"分類"}, {t:"enact", m:"頒布/制定 (正解)"}, {t:"detect", m:"偵測"}]
+
+            // Text D
+            { 
+                id: 46, ans: "C", 
+                snippets: {
+                    pre: "In 2015, the Every Student Succeeds Act (ESSA) replaced the No Child Left Behind Act, granting US states greater autonomy over educational standards.",
+                    preTrans: "2015 年，《每一位學生成功法案》(ESSA) 取代了《不讓任何孩子落後法案》，賦予美國各州在教育標準上更大的自主權。",
+                    cur: "As states __46__ the complex task of designing new assessment systems, several transformative trends have emerged.",
+                    curTrans: "當各州 __46__ 設計新評估系統的複雜任務時，出現了幾個變革性的趨勢。",
+                    post: "The first major shift is toward flexibility."
+                },
+                options: ["engage (從事)", "pursue (追求)", "address (處理/應對)", "accumulate (累積)"], 
+                reason: "address a task 意為「著手處理任務」。" 
             },
-            {
-                id: 19, type: "single", answer: "A",
-                question: "Improving ________ in the rural village is a priority, as the lack of clean water and waste disposal has caused several health issues.",
-                translation: "改善農村的衛生狀況是當務之急，因為缺乏乾淨的水和廢物處理已導致數個健康問題。",
-                options: [{t:"sanitation", m:"公共衛生 (正解)"}, {t:"antibiotic", m:"抗生素"}, {t:"opinion", m:"意見"}, {t:"disorder", m:"失調"}]
+            { 
+                id: 47, ans: "D", 
+                snippets: {
+                    pre: "States are now favoring personalized, student-centered evaluations.",
+                    preTrans: "各州現在傾向於個人化、以學生為中心的評估。",
+                    cur: "Although creating such specific assessments can be __47__, modern technology provides a solution through computer adaptive testing.",
+                    curTrans: "雖然創建這樣具體的評估可能很 __47__，但現代科技透過電腦適性測驗提供了解決方案。",
+                    post: "These programs automatically adjust question difficulty based on a student’s previous answers..."
+                },
+                options: ["decision-making (決策)", "decision-made (已做決定的)", "time-consumed (被耗時的)", "time-consuming (耗時的)"], 
+                reason: "個人化評估通常很花時間，故選 time-consuming。" 
             },
-            {
-                id: 20, type: "single", answer: "B",
-                question: "As the event ________, your job is to make sure all the volunteers know their roles and that the schedule runs smoothly.",
-                translation: "作為活動協調員，你的工作是確保所有志工都知道自己的角色，並且行程順利進行。",
-                options: [{t:"fungus", m:"真菌"}, {t:"coordinator", m:"協調員 (正解)"}, {t:"ornithologist", m:"鳥類學家"}, {t:"serendipity", m:"意外發現好運"}]
+            { 
+                id: 48, ans: "B", 
+                snippets: {
+                    pre: "Although creating such specific assessments can be time-consuming, modern technology provides a solution through computer adaptive testing.",
+                    preTrans: "雖然創建這樣具體的評估可能很耗時，但現代科技透過電腦適性測驗提供了解決方案。",
+                    cur: "These programs automatically adjust question difficulty based on a student’s previous answers, __48__ the material from being too easy or too hard while offering immediate feedback.",
+                    curTrans: "這些程式根據學生之前的回答自動調整問題難度，__48__ 教材太簡單或太難，同時提供即時反饋。",
+                    post: "Secondly, testing scopes are widening."
+                },
+                options: ["avoiding (避免)", "preventing (防止)", "regarding (關於)", "distinguishing (區分)"], 
+                reason: "prevent ... from ... 意為「防止...發生」。" 
             },
-            {
-                id: 21, type: "single", answer: "D",
-                question: "The judge decided that the student's essay had enough ________ to win the competition, despite a few minor grammatical errors.",
-                translation: "評審決定該學生的文章具有足夠的優點贏得比賽，儘管有一些小的語法錯誤。",
-                options: [{t:"well-being", m:"福祉"}, {t:"measures", m:"措施"}, {t:"breed", m:"品種"}, {t:"merit", m:"優點/價值 (正解)"}]
+            { 
+                id: 49, ans: "B", 
+                snippets: {
+                    pre: "Secondly, testing scopes are widening.",
+                    preTrans: "其次，測試範圍正在擴大。",
+                    cur: "States have begun to __49__ diverse subjects beyond traditional math and reading, such as science and social studies, into their testing frameworks.",
+                    curTrans: "各州已開始將傳統數學和閱讀以外的多樣科目，如科學和社會研究，__49__ 到他們的測試框架中。",
+                    post: "Furthermore, there is a move away from single end-of-year exams toward continuous assessment throughout the learning process."
+                },
+                options: ["modify (修改)", "incorporate (納入/合併)", "exhibit (展示)", "identify (識別)"], 
+                reason: "incorporate A into B 將A納入B。" 
             },
-            {
-                id: 22, type: "single", answer: "C",
-                question: "For security reasons, passengers are constantly reminded not to leave their luggage ________ in the airport terminal.",
-                translation: "基於安全考量，不斷提醒乘客不要將行李無人看管地留在機場航廈。",
-                options: [{t:"pleaded", m:"懇求"}, {t:"excluded", m:"排除"}, {t:"unattended", m:"無人看管的 (正解)"}, {t:"separated", m:"分開的"}]
-            },
-            {
-                id: 23, type: "single", answer: "A",
-                question: "Despite the power failure, the students tried to ________ their study session using the flashlights on their phones.",
-                translation: "儘管停電，學生們仍試圖用手機的手電筒繼續他們的學習。",
-                options: [{t:"carry on", m:"繼續 (正解)"}, {t:"give rise to", m:"導致"}, {t:"live out", m:"活過"}, {t:"toss out", m:"丟棄"}]
-            },
-            {
-                id: 24, type: "single", answer: "B",
-                question: "We must be careful not to ________ the lab samples with dust or bacteria, or the experiment results will be invalid.",
-                translation: "我們必須小心不要用灰塵或細菌污染實驗樣本，否則實驗結果將無效。",
-                options: [{t:"regulate", m:"規範"}, {t:"contaminate", m:"污染 (正解)"}, {t:"release", m:"釋放"}, {t:"execute", m:"執行"}]
-            },
-            {
-                id: 25, type: "single", answer: "B",
-                question: "Due to ________ circumstances regarding the weather, the outdoor graduation ceremony has been moved to the gymnasium.",
-                translation: "由於關於天氣的不可預見情況，戶外畢業典禮已移至體育館舉行。",
-                options: [{t:"constructive", m:"建設性的"}, {t:"unforeseen", m:"不可預見的 (正解)"}, {t:"keen", m:"敏銳的"}, {t:"unintentional", m:"非故意的"}]
-            },
-            {
-                id: 26, type: "single", answer: "C",
-                question: "The criminal was sentenced to life ________ because the severity of his crimes made him a permanent threat to society.",
-                translation: "罪犯被判處無期徒刑，因為他罪行的嚴重性使他成為社會的永久威脅。",
-                options: [{t:"illness", m:"疾病"}, {t:"privilege", m:"特權"}, {t:"imprisonment", m:"監禁 (正解)"}, {t:"establishment", m:"機構"}]
-            },
-            {
-                id: 27, type: "single", answer: "A",
-                question: "Many people believe that a good night's sleep is the best ________ for a stressful week, as it allows the body and mind to recover.",
-                translation: "許多人認為一夜好眠是緩解一週壓力的最佳良藥，因為它能讓身心恢復。",
-                options: [{t:"remedy", m:"療法/補救 (正解)"}, {t:"outburst", m:"爆發"}, {t:"observation", m:"觀察"}, {t:"parole", m:"假釋"}]
-            },
-            {
-                id: 28, type: "single", answer: "C",
-                question: "The young author excitedly sent the final draft of her ________ to the publisher, hoping it would be accepted for publication.",
-                translation: "年輕作家興奮地將她的手稿定稿寄給出版商，希望能被接受出版。",
-                options: [{t:"physiology", m:"生理學"}, {t:"isolation", m:"孤立"}, {t:"manuscript", m:"手稿 (正解)"}, {t:"authority", m:"權威"}]
+            { 
+                id: 50, ans: "C", 
+                snippets: {
+                    pre: "Furthermore, there is a move away from single end-of-year exams toward continuous assessment throughout the learning process.",
+                    preTrans: "此外，有一種從單一的年終考試轉向整個學習過程中持續評估的趨勢。",
+                    cur: "Ultimately, the goal is to __50__ both teachers’ instruction and students’ learning.",
+                    curTrans: "最終，目標是 __50__ 教師的教學和學生的學習。",
+                    post: "This method enables teachers to change their teaching strategies and helps students locate their own areas for improvement..."
+                },
+                options: ["slap (拍擊)", "flick (輕彈)", "inform (通知/提供資訊給)", "outsmart (智取)"], 
+                reason: "評估的目的是為教學提供資訊與指引，inform instruction 意為「為教學提供依據/資訊」。" 
             }
         ];
 
-        const contextA = `(A) During the Roman Empire, gladiators were iconic combatants armed with lethal weapons, engaging in brutal spectacles to entertain the masses. Whether battling wild beasts, criminals, or one another, these fighters struggled relentlessly until a participant was either killed or forced to accept __29__. This violent display captivated Roman society, drawing enthusiastic crowds to arenas as modern spectators flock to football matches. Although many combatants were slaves or prisoners of war, a significant number were actually free volunteers. In fact, such volunteers once __30__ half of the gladiators recruited from diverse regions, including Thrace, Gaul, and Africa. Evidence even suggests that skilled females participated in these contests. Despite the risks of their profession, successful fighters were well-cared for and generously __31__ by their owners with treasures. Interestingly, Romans referred to them as hordearii, or "barley eaters." Chemical analysis of bones confirms this title was __32__; their diet consisted primarily of wheat, beans, and barley, with very little meat. To aid recovery after intense physical exertion, gladiators consumed calcium-rich drinks made from plant ashes to __33__ their bodies and promote healing. While this plant-heavy regimen appears unconventional by today's athletic standards, it successfully fueled the empire's most legendary heroes.`;
-        
-        const clozeA = [
-            { 
-                id: 29, answer: "D", 
-                sentenceTranslation: "無論是與野獸、罪犯還是彼此搏鬥，這些戰士都不懈地掙扎，直到參與者被殺或被迫接受失敗。",
-                options: [{t:"interest", m:"興趣"}, {t:"warden", m:"典獄長"}, {t:"courage", m:"勇氣"}, {t:"defeat", m:"失敗 (正解)"}] 
-            },
-            { 
-                id: 30, answer: "C", 
-                sentenceTranslation: "事實上，這些志願者曾經佔了來自色雷斯、高盧和非洲等不同地區招募的角鬥士的一半。",
-                options: [{t:"looked after", m:"照顧"}, {t:"were credited to", m:"歸功於"}, {t:"accounted for", m:"佔...比例/解釋 (正解)"}, {t:"were intend to", m:"打算做(文法錯誤)"}] 
-            },
-            { 
-                id: 31, answer: "A", 
-                sentenceTranslation: "儘管他們的職業有風險，但成功的戰士會受到很好的照顧，並被主人慷慨地獎賞珍寶。",
-                options: [{t:"rewarded", m:"獎賞 (正解)"}, {t:"banned", m:"禁止"}, {t:"reared", m:"撫養/飼養"}, {t:"proved", m:"證明"}] 
-            },
-            { 
-                id: 32, answer: "A", 
-                sentenceTranslation: "骨骼的化學分析證實了這個稱號是名副其實的；他們的飲食主要由小麥、豆類和大麥組成，肉類很少。",
-                options: [{t:"literal", m:"字面上的/名副其實 (正解)"}, {t:"obscure", m:"模糊的/晦澀的"}, {t:"mighty", m:"強大的"}, {t:"firm", m:"堅定的/公司"}] 
-            },
-            { 
-                id: 33, answer: "B", 
-                sentenceTranslation: "為了在劇烈運動後幫助恢復，角鬥士飲用由植物灰製成的富含鈣的飲料來增強他們的身體並促進癒合。",
-                options: [{t:"pile", m:"堆積"}, {t:"fortify", m:"增強/設防 (正解)"}, {t:"hang", m:"懸掛"}, {t:"ensure", m:"確保"}] 
-            }
-        ];
-
-        const contextB = `(B) Civilizations have long constructed urban drainage systems. However, as city populations grew, these ancient networks inevitably became __34__. The situation worsened during the Industrial Revolution, creating an urgent need to efficiently treat sewage mixed with manufacturing waste. Today, modern wastewater __35__ is a sophisticated multi-stage process designed to remove harmful physical and biological contaminants. The procedure starts by __36___ large debris, such as paper and wood, alongside heavy materials like dirt. Subsequently, the water flows into primary tanks, __37__ solid sludge settles to the bottom and surface grease is collected. Simultaneously, organic matter is broken down into smaller, manageable substances. The sewage then enters secondary tanks for biological decomposition, followed by sand filtration to __38__ almost all bacteria and fine particles. In the final stage, chlorine is introduced to get rid of any surviving pathogens. Once the water is purified and the chlorine removed, the clean water is safely __39__ into rivers or oceans. This systematic sanitation is essential for maintaining public health and environmental stability in the modern world.`;
-
-        const clozeB = [
-            { 
-                id: 34, answer: "D", 
-                sentenceTranslation: "然而，隨著城市人口的增長，這些古老的網絡不可避免地變得超載。",
-                options: [{t:"intended", m:"預期的"}, {t:"accompanied", m:"伴隨的"}, {t:"renowned", m:"著名的"}, {t:"overloaded", m:"超載 (正解)"}] 
-            },
-            { 
-                id: 35, answer: "C", 
-                sentenceTranslation: "如今，現代廢水處理是一個複雜的多階段過程，旨在去除有害的物理和生物污染物。",
-                options: [{t:"engagement", m:"訂婚/參與"}, {t:"element", m:"元素"}, {t:"treatment", m:"處理/治療 (正解)"}, {t:"involvement", m:"涉入"}] 
-            },
-            { 
-                id: 36, answer: "A", 
-                sentenceTranslation: "該程序首先篩除大塊碎片，如紙張和木頭，以及像泥土這樣的重物。",
-                options: [{t:"screening out", m:"篩除 (正解)"}, {t:"catching up with", m:"趕上"}, {t:"fighting for", m:"爭取"}, {t:"lending support to", m:"支持"}] 
-            },
-            { 
-                id: 37, answer: "B", 
-                sentenceTranslation: "隨後，水流進入初級沉澱池，在那裡固體污泥沉澱到底部，表面的油脂被收集。",
-                options: [{t:"what", m:"什麼(名詞子句)"}, {t:"where", m:"在那裡(關係副詞) (正解)"}, {t:"which", m:"哪一個(關係代名詞)"}, {t:"that", m:"那個(關係代名詞)"}] 
-            },
-            { 
-                id: 38, answer: "A", 
-                sentenceTranslation: "污水隨後進入二級池進行生物分解，接著進行砂濾以消除幾乎所有的細菌和微細顆粒。",
-                options: [{t:"eliminate", m:"消除 (正解)"}, {t:"compose", m:"組成/作曲"}, {t:"heighten", m:"增高/加強"}, {t:"stamp", m:"蓋章/跺腳"}] 
-            },
-            { 
-                id: 39, answer: "D", 
-                sentenceTranslation: "一旦水被淨化並去除了氯，乾淨的水就會被安全地排放到河流或海洋中。",
-                options: [{t:"dissolved", m:"溶解的"}, {t:"digested", m:"消化的"}, {t:"discarded", m:"丟棄的"}, {t:"discharged", m:"排放 (正解)"}] 
-            }
-        ];
-
-        const contextC = `(C) The Mariana Trench, located miles beneath the Pacific surface, represents the planet's deepest point. However, a recent study published in Nature Ecology & Evolution __40__ that even this remote spot cannot escape human impact. Researchers utilizing a remotely operated vehicle discovered that small, hard-shelled organisms at these depths are severely contaminated. In fact, the toxin levels found in these creatures were fifty times greater than __41__ of the most heavily polluted rivers in the world. The most alarming aspect of this discovery is the nature of the chemicals involved. They are "persistent organic pollutants" (POPs), meaning they __42__ in the environment for extensive periods rather than degrading. Among the most __43__ types identified were PCBs and PBDEs. PCBs were once essential for industry but were outlawed in the 1970s due to serious health risks. __44__, PBDEs were widely used in consumer products before being prohibited. Because these chemicals do not break down naturally, they __45__ in the fat tissues of surface organisms or adhere to sinking plastic debris. When these materials reach the ocean floor, they enter the deep-sea food web.`;
-
-        const clozeC = [
-            { 
-                id: 40, answer: "A", 
-                sentenceTranslation: "然而，最近發表在《自然生態與演化》上的一項研究揭露，即使是這個偏遠的地方也無法逃脫人類的影響。",
-                options: [{t:"reveals", m:"揭露 (正解)"}, {t:"revealing", m:"揭露(分詞)"}, {t:"to reveal", m:"去揭露(不定詞)"}, {t:"is revealed", m:"被揭露(被動)"}] 
-            },
-            { 
-                id: 41, answer: "C", 
-                sentenceTranslation: "事實上，在這些生物體內發現的毒素水平比世界上污染最嚴重的河流中的毒素水平高出五十倍。",
-                options: [{t:"that", m:"那個(代名詞單數)"}, {t:"what", m:"什麼"}, {t:"those", m:"那些(代名詞複數) (正解)"}, {t:"which", m:"哪一個"}] 
-            },
-            { 
-                id: 42, answer: "C", 
-                sentenceTranslation: "它們是「持久性有機污染物」(POPs)，這意味著它們會在環境中持續存在很長一段時間，而不是分解。",
-                options: [{t:"take turns", m:"輪流"}, {t:"spring up", m:"湧現"}, {t:"stick around", m:"逗留/持續存在 (正解)"}, {t:"roll their eyes", m:"翻白眼"}] 
-            },
-            { 
-                id: 43, answer: "A", 
-                sentenceTranslation: "在被鑑定的最普遍類型中，包括多氯聯苯 (PCBs) 和多溴二苯醚 (PBDEs)。",
-                options: [{t:"prevalent", m:"普遍的 (正解)"}, {t:"aggressive", m:"侵略性的"}, {t:"cynical", m:"憤世嫉俗的"}, {t:"pessimistic", m:"悲觀的"}] 
-            },
-            { 
-                id: 44, answer: "B", 
-                sentenceTranslation: "同樣地，PBDEs 在被禁止之前廣泛用於消費產品中。",
-                options: [{t:"Instead", m:"相反地"}, {t:"Similarly", m:"同樣地 (正解)"}, {t:"In fact", m:"事實上"}, {t:"However", m:"然而"}] 
-            },
-            { 
-                id: 45, answer: "D", 
-                sentenceTranslation: "因為這些化學物質不會自然分解，它們潛伏在表面生物的脂肪組織中，或附著在下沉的塑膠碎片上。",
-                options: [{t:"compete", m:"競爭"}, {t:"tour", m:"旅遊"}, {t:"apply", m:"申請/應用"}, {t:"lurk", m:"潛伏/隱藏 (正解)"}] 
-            }
-        ];
-
-        const contextD = `(D) In 2015, the Every Student Succeeds Act (ESSA) replaced the No Child Left Behind Act, granting US states greater autonomy over educational standards. As states __46__ the complex task of designing new assessment systems, several transformative trends have emerged. The first major shift is toward flexibility. Historically, schools relied on standardized tests—similar to the SAT—which are convenient but often fail to reflect individual progress. States are now favoring personalized, student-centered evaluations. Although creating such specific assessments can be __47__, modern technology provides a solution through computer adaptive testing. These programs automatically adjust question difficulty based on a student’s previous answers, __48__ the material from being too easy or too hard while offering immediate feedback. Secondly, testing scopes are widening. States have begun to __49__ diverse subjects beyond traditional math and reading, such as science and social studies, into their testing frameworks. Furthermore, there is a move away from single end-of-year exams toward continuous assessment throughout the learning process. Ultimately, the goal is to __50__ both teachers’ instruction and students’ learning. This method enables teachers to change their teaching strategies and helps students locate their own areas for improvement.`;
-
-        const clozeD = [
-            { 
-                id: 46, answer: "C", 
-                sentenceTranslation: "隨著各州應對設計新評估系統的複雜任務，出現了幾個變革性的趨勢。",
-                options: [{t:"engage", m:"從事/訂婚"}, {t:"pursue", m:"追求"}, {t:"address", m:"處理/應對 (正解)"}, {t:"accumulate", m:"累積"}] 
-            },
-            { 
-                id: 47, answer: "D", 
-                sentenceTranslation: "雖然創建這樣具體的評估可能是耗時的，但現代科技通過電腦適性測驗提供了解決方案。",
-                options: [{t:"decision-making", m:"決策"}, {t:"decision-made", m:"已決定的(X)"}, {t:"time-consumed", m:"被時間消耗的(X)"}, {t:"time-consuming", m:"耗時的 (正解)"}] 
-            },
-            { 
-                id: 48, answer: "B", 
-                sentenceTranslation: "這些程式會根據學生之前的回答自動調整問題難度，預防教材太簡單或太難，同時提供即時回饋。",
-                options: [{t:"avoiding", m:"避免+Ving/N"}, {t:"preventing", m:"預防/避免(搭配from) (正解)"}, {t:"regarding", m:"關於"}, {t:"distinguishing", m:"區別"}] 
-            },
-            { 
-                id: 49, answer: "B", 
-                sentenceTranslation: "各州已開始將傳統數學和閱讀以外的多樣化科目（如科學和社會研究）納入其測試框架中。",
-                options: [{t:"modify", m:"修改"}, {t:"incorporate", m:"納入/整合 (正解)"}, {t:"exhibit", m:"展示"}, {t:"identify", m:"識別"}] 
-            },
-            { 
-                id: 50, answer: "C", 
-                sentenceTranslation: "最終，目標是對教師的教學和學生的學習產生影響(提供資訊)。",
-                options: [{t:"slap", m:"拍打"}, {t:"flick", m:"輕彈"}, {t:"inform", m:"通知/對...有影響 (正解)"}, {t:"outsmart", m:"智取"}] 
-            }
-        ];
-
-        let fullExamData = [...examData];
-        const processCloze = (context, questions) => {
-            return questions.map(q => ({
-                ...q,
-                type: "cloze",
-                context: context,
-                translation: q.sentenceTranslation || "（請參考單句解析）"
-            }));
-        };
-
-        fullExamData.push(...processCloze(contextA, clozeA));
-        fullExamData.push(...processCloze(contextB, clozeB));
-        fullExamData.push(...processCloze(contextC, clozeC));
-        fullExamData.push(...processCloze(contextD, clozeD));
-        
-        fullExamData.sort((a, b) => a.id - b.id);
-
-        const searchInput = document.getElementById('searchInput');
-        const displayArea = document.getElementById('displayArea');
+        // ==========================================
+        // UI Logic
+        // ==========================================
+        const input = document.getElementById('queryInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const allAnsBtn = document.getElementById('allAnsBtn');
+        const allDetailBtn = document.getElementById('allDetailBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const resultArea = document.getElementById('resultArea');
         const errorMsg = document.getElementById('errorMsg');
+        const sessionCountEl = document.getElementById('sessionQueryCount');
+        let sessionQueries = 0;
 
-        searchInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') handleSearch();
+        // --- Session Counter ---
+        function incrementQueryCount() {
+            sessionQueries++;
+            sessionCountEl.textContent = sessionQueries;
+            sessionCountEl.classList.remove('text-gray-800');
+            sessionCountEl.classList.add('text-blue-600', 'scale-125', 'transition-transform');
+            setTimeout(() => {
+                sessionCountEl.classList.remove('text-blue-600', 'scale-125');
+                sessionCountEl.classList.add('text-gray-800');
+            }, 200);
+        }
+
+        // --- Event Listeners ---
+        submitBtn.addEventListener('click', () => processQuery(input.value));
+        
+        allAnsBtn.addEventListener('click', () => {
+            input.value = 'all-ans';
+            processQuery('all-ans');
         });
 
-        function clearScreen() {
-            searchInput.value = '';
-            displayArea.innerHTML = '<div class="text-center text-gray-400 mt-10"><p>請輸入題號開始查詢</p></div>';
-            errorMsg.classList.add('hidden');
-        }
+        allDetailBtn.addEventListener('click', () => {
+            input.value = 'all-detail';
+            processQuery('all-detail');
+        });
 
-        function handleSearch() {
-            const query = searchInput.value.trim().toLowerCase();
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            resultArea.innerHTML = '<div class="text-center text-gray-400 mt-10">請輸入題號或點擊上方按鈕開始</div>';
+            errorMsg.classList.add('hidden');
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') processQuery(input.value);
+        });
+
+        // --- Core Logic ---
+        function processQuery(val) {
+            val = val.trim().toLowerCase();
             errorMsg.classList.add('hidden');
 
-            if (query === 'all') {
-                renderQuickAnswerGrid();
-            } else {
-                const qNum = parseInt(query);
-                if (isNaN(qNum) || qNum < 1 || qNum > 50) {
-                    showError("請輸入有效的題號 (1-50) 或 'all'");
-                    return;
-                }
-                const question = fullExamData.find(q => q.id === qNum);
-                if (question) {
-                    renderQuestionCard(question);
+            if (val === 'all-ans' || val === 'all') {
+                incrementQueryCount();
+                renderAllAnswers();
+            } 
+            else if (val === 'all-detail') {
+                incrementQueryCount();
+                renderAllDetails();
+            } 
+            else {
+                const num = parseInt(val);
+                if (!isNaN(num) && num >= 1 && num <= 50) {
+                    incrementQueryCount();
+                    renderSingleDetail(num);
                 } else {
-                    renderQuestionCard({
-                        id: qNum, type: 'single', question: "資料庫中暫無此題數據", options: [], answer: "?", translation: ""
-                    });
+                    errorMsg.classList.remove('hidden');
                 }
             }
         }
 
-        function showError(msg) {
-            errorMsg.textContent = msg;
-            errorMsg.classList.remove('hidden');
-        }
-
-        function renderQuickAnswerGrid() {
+        // Action 1: Show Grid (All Answers)
+        function renderAllAnswers() {
             let html = `
-                <div class="bg-white rounded-xl shadow-lg p-6 fade-in">
-                    <h2 class="text-xl font-bold mb-4 text-center border-b pb-2">快速對答表</h2>
-                    <div class="grid grid-cols-5 md:grid-cols-10 gap-2">
+                <div class="bg-white rounded-xl shadow p-6 fade-in ring-1 ring-gray-900/5">
+                    <div class="flex justify-between items-center mb-4 border-b pb-2">
+                        <h2 class="text-xl font-bold text-gray-800">快速對答表</h2>
+                        <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">共 50 題</span>
+                    </div>
+                    <div class="grid grid-cols-5 sm:grid-cols-10 gap-2">
             `;
-            for (let i = 1; i <= 50; i++) {
-                const q = fullExamData.find(item => item.id === i);
-                const ans = q ? q.answer : "-";
+            
+            examData.forEach(item => {
                 html += `
-                    <div class="flex flex-col items-center justify-center p-2 bg-gray-50 rounded border border-gray-200">
-                        <span class="text-xs text-gray-500">${i}</span>
-                        <span class="font-bold text-blue-600">${ans}</span>
+                    <div class="flex flex-col items-center p-2 border rounded bg-gray-50 hover:bg-blue-50 transition-colors">
+                        <span class="text-xs text-gray-400 mb-1">${item.id}</span>
+                        <span class="font-bold text-lg text-blue-600">${item.ans}</span>
                     </div>
                 `;
-            }
+            });
             html += `</div></div>`;
-            displayArea.innerHTML = html;
+            resultArea.innerHTML = html;
         }
 
-        function extractSentence(text, questionId) {
-            const targetPattern = new RegExp(`__+${questionId}__+`, 'g');
-            const match = targetPattern.exec(text);
-            
-            if (!match) return "無法定位題目句，請參考完整文章。";
-
-            const targetIndex = match.index;
-
-            let startIndex = 0;
-            for (let i = targetIndex; i >= 0; i--) {
-                const char = text[i];
-                if (['.', '?', '!'].includes(char)) {
-                    startIndex = i + 1;
-                    break;
-                }
-            }
-
-            let endIndex = text.length;
-            for (let i = targetIndex; i < text.length; i++) {
-                if (['.', '?', '!'].includes(text[i])) {
-                    endIndex = i + 1;
-                    break;
-                }
-            }
-
-            return text.substring(startIndex, endIndex).trim();
+        // Action 2: Show Single Card
+        function renderSingleDetail(id) {
+            const data = examData.find(d => d.id === id);
+            if (!data) return;
+            resultArea.innerHTML = generateCardHTML(data);
         }
 
-        function renderQuestionCard(data) {
-            let contextHtml = '';
-            
-            if (data.type === 'cloze' && data.context) {
-                const singleSentence = extractSentence(data.context, data.id);
-                
-                const processedContext = singleSentence.replace(/__(\d+)___|__(\d+)__/g, (match, p1, p2) => {
-                    const num = p1 || p2;
-                    const isCurrent = parseInt(num) === data.id;
-                    const activeClass = isCurrent ? "bg-yellow-100 border-blue-600 text-blue-600 font-bold" : "border-gray-400";
-                    return `<span class="border-b-2 ${activeClass} mx-1 inline-block px-1 text-base font-mono" title="Q${num}">${num}</span>`;
+        // Action 3: Show All Cards
+        function renderAllDetails() {
+            const fullHtml = examData.map(data => generateCardHTML(data)).join('');
+            resultArea.innerHTML = fullHtml;
+        }
+
+        // Helper: Generate HTML String for a Card
+        function generateCardHTML(data) {
+            let questionBlock = '';
+
+            // Handle Cloze Context
+            if (data.snippets) {
+                let curSentenceHtml = data.snippets.cur.replace(/__(\d+)__/g, (match, p1) => {
+                    const isCurrent = parseInt(p1) === data.id;
+                    const style = isCurrent ? "border-blue-500 text-blue-600 bg-blue-50" : "border-gray-300 text-gray-400";
+                    return `<span class="border-b-2 ${style} px-1 mx-1 font-bold inline-block min-w-[30px] text-center">${p1}</span>`;
                 });
 
-                contextHtml = `
-                    <div class="bg-blue-50 p-6 rounded-lg mb-6 text-gray-800 leading-relaxed border-l-4 border-blue-500 shadow-sm">
-                        <span class="text-xs font-bold text-blue-500 uppercase mb-2 block tracking-wider">Cloze Sentence</span>
-                        <p class="text-lg md:text-xl font-serif">"... ${processedContext} ..."</p>
-                        ${data.translation ? `<div class="mt-4 pt-3 border-t border-blue-200 text-gray-600 text-sm font-medium">翻譯：${data.translation}</div>` : ''}
+                questionBlock = `
+                    <div class="space-y-4 mb-6">
+                        <div class="p-3 bg-gray-50 rounded-lg border-l-4 border-gray-300">
+                            <div class="text-xs text-gray-400 uppercase font-bold mb-1">Previous</div>
+                            <p class="text-gray-600 mb-1">${data.snippets.pre}</p>
+                            <p class="text-gray-500 text-sm border-t border-gray-200 pt-1 mt-1">${data.snippets.preTrans}</p>
+                        </div>
+                        <div class="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500 shadow-sm">
+                            <div class="text-xs text-blue-400 uppercase font-bold mb-1">Target</div>
+                            <p class="text-gray-800 text-lg font-medium mb-2 leading-relaxed">${curSentenceHtml}</p>
+                            <p class="text-gray-600 text-sm border-t border-blue-200 pt-2 mt-1 font-medium">${data.snippets.curTrans}</p>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg border-l-4 border-gray-300">
+                            <div class="text-xs text-gray-400 uppercase font-bold mb-1">Following</div>
+                            <p class="text-gray-600 mb-1">${data.snippets.post}</p>
+                            <p class="text-gray-500 text-sm border-t border-gray-200 pt-1 mt-1">${data.snippets.postTrans || ''}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                let qText = data.q.replace(/_+/g, `<span class="border-b-2 border-blue-500 text-transparent px-8 select-none">__</span>`);
+                questionBlock = `
+                    <div class="text-xl font-medium mb-4 text-gray-800 leading-relaxed">${qText}</div>
+                    <div class="mb-6">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">中文翻譯</h3>
+                        <p class="text-gray-600 bg-gray-50 p-3 rounded border border-gray-100">${data.trans}</p>
                     </div>
                 `;
             }
 
-            const optionLabels = ['A', 'B', 'C', 'D'];
-            let optionsHtml = '<div class="grid gap-3">';
-            
-            data.options.forEach((opt, index) => {
-                const label = optionLabels[index];
-                const isCorrect = label === data.answer;
+            // Options
+            let optionsHtml = '<div class="space-y-3 mb-6">';
+            data.options.forEach((optText, index) => {
+                const labels = ['A', 'B', 'C', 'D'];
+                const currentLabel = labels[index];
+                const isCorrect = (currentLabel === data.ans);
                 
-                let containerClass = "border p-4 rounded-xl flex items-start transition-all duration-200 ";
-                
-                if (isCorrect) {
-                    containerClass += "bg-green-50 border-green-500 text-green-900 shadow-sm transform scale-[1.01]";
-                } else {
-                    containerClass += "bg-red-50 border-red-100 text-gray-600 opacity-90";
-                }
-
-                // 顯示所有選項的翻譯
-                const explanation = opt.m ? `<span class="block text-sm mt-1 text-gray-500 font-normal">${opt.m}</span>` : '';
+                const containerClass = isCorrect 
+                    ? 'bg-green-50 border-green-400 shadow-sm ring-1 ring-green-400' 
+                    : 'bg-white border-gray-200';
+                const textClass = isCorrect ? 'text-green-800 font-bold' : 'text-gray-600';
+                const labelClass = isCorrect ? 'text-green-600' : 'text-gray-400';
+                const icon = isCorrect ? '<span class="text-green-600 text-xl">✅</span>' : '';
 
                 optionsHtml += `
-                    <div class="${containerClass}">
-                        <div class="font-bold text-lg w-10 shrink-0 flex items-center justify-center">${label}.</div>
-                        <div class="flex-1">
-                            <span class="font-bold text-lg">${opt.t}</span>
-                            ${explanation}
-                        </div>
-                        <div class="w-8 flex justify-center items-center text-xl">${isCorrect ? '✅' : ''}</div>
+                    <div class="flex items-center p-3 border rounded-lg ${containerClass}">
+                        <span class="w-8 font-bold ${labelClass} text-lg">${currentLabel}.</span>
+                        <span class="flex-1 ${textClass}">${optText}</span>
+                        ${icon}
                     </div>
                 `;
             });
             optionsHtml += '</div>';
 
-            const html = `
-                <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 fade-in relative overflow-hidden border border-gray-100">
-                    <div class="absolute top-0 right-0 bg-blue-600 text-white text-sm font-bold px-4 py-2 rounded-bl-xl shadow-md">
-                        Question ${data.id}
+            return `
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden fade-in ring-1 ring-gray-900/5 mb-8">
+                    <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4 flex justify-between items-center text-white shadow-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-blue-400/30 px-2 py-1 rounded text-xs font-mono uppercase tracking-wide">Q${data.id}</span>
+                            <h2 class="text-lg font-bold">詳解卡片</h2>
+                        </div>
+                        <span class="bg-white text-blue-600 px-3 py-1 rounded-full text-sm font-bold shadow-sm">Ans: ${data.ans}</span>
                     </div>
-                    
-                    ${contextHtml}
-
-                    <div class="mb-8">
-                        ${data.type !== 'cloze' ? `<h3 class="text-xl font-bold text-gray-800 mb-3 leading-snug">${data.question}</h3>` : ''}
-                        ${data.type !== 'cloze' && data.translation ? `<div class="bg-gray-50 rounded-lg p-3 text-gray-600 text-sm border-l-4 border-gray-300">${data.translation}</div>` : ''}
+                    <div class="p-6">
+                        ${questionBlock}
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">選項分析</h3>
+                        ${optionsHtml}
+                        <div class="mt-6 pt-5 border-t border-gray-100 bg-yellow-50/50 -mx-6 px-6 pb-2">
+                            <h3 class="text-xs font-bold text-yellow-600 uppercase tracking-wider mb-2 flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                解析詳情
+                            </h3>
+                            <p class="text-gray-700 text-sm leading-relaxed">${data.reason}</p>
+                        </div>
                     </div>
-
-                    ${optionsHtml}
                 </div>
             `;
-
-            displayArea.innerHTML = html;
         }
+
     </script>
 </body>
 </html>
