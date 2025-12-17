@@ -39,7 +39,7 @@
         <p class="text-sm text-gray-500 text-center mb-6">輸入題號 (1-50) 查看詳解，或使用下方功能鍵</p>
         
         <div class="flex flex-col sm:flex-row gap-3">
-            <input type="text" id="queryInput" placeholder="輸入題號 (如: 29)" 
+            <input type="text" id="queryInput" placeholder="輸入題號 (如: 25)" 
                 class="w-full sm:flex-1 border-2 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 text-lg transition-colors shadow-sm text-center sm:text-left"
                 autocomplete="off">
             
@@ -58,7 +58,7 @@
                 </button>
             </div>
         </div>
-        <p id="errorMsg" class="text-red-500 text-sm mt-2 hidden text-center font-medium">⚠️ 請輸入有效的題號 (1-50)</p>
+        <p id="errorMsg" class="text-red-500 text-sm mt-2 hidden text-center font-medium">⚠️ 請輸入有效的題號</p>
     </div>
 
     <div id="resultArea" class="w-full max-w-3xl mb-8 space-y-8">
@@ -68,11 +68,11 @@
     </div>
 
     <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm border border-gray-200 shadow-md rounded-full px-5 py-2 flex items-center gap-4 text-xs sm:text-sm text-gray-500 font-medium z-40 whitespace-nowrap">
-        <div class="flex items-center gap-1" title="全球總瀏覽次數">
-            <span class="text-blue-500">🌏</span>
-            <span>總瀏覽: 
-                <span id="busuanzi_container_site_pv" style="display:inline;">
-                    <span id="busuanzi_value_site_pv" class="font-bold text-gray-800 animate-pulse">--</span>
+        <div class="flex items-center gap-1" title="本頁總瀏覽次數">
+            <span class="text-blue-500">📄</span>
+            <span>本頁瀏覽: 
+                <span id="busuanzi_container_page_pv" style="display:inline;">
+                    <span id="busuanzi_value_page_pv" class="font-bold text-gray-800 animate-pulse">--</span>
                 </span>
             </span>
         </div>
@@ -88,7 +88,7 @@
         // Data Source
         // ==========================================
         const examData = [
-            // Part 1-3: Vocabulary (1-28)
+            // Part 1: Vocabulary (1-22) - Standard
             { id: 1, ans: "B", q: "After demonstrating exceptional leadership skills during the crisis, Ms. Chen was promoted to a high-ranking ________ position within the company.", trans: "在危機期間展現出卓越的領導能力後，陳女士被晉升為公司內的高階行政職位。", options: ["intruder (入侵者)", "executive (行政主管/執行的)", "colleague (同事)", "villain (反派)"], reason: "因展現領導力而被晉升，通常是擔任「行政主管」(executive) 職位。" },
             { id: 2, ans: "A", q: "The professor’s lecture on quantum physics was hardly ________ to the first-year students, as it was filled with difficult terms and complicated concept.", trans: "教授關於量子物理學的講座對一年級學生來說幾乎無法理解，因為充滿了艱澀的術語和複雜的概念。", options: ["comprehensible (可理解的)", "affordable (負擔得起的)", "permissible (可允許的)", "indispensable (不可或缺的)"], reason: "hardly comprehensible 意指「幾乎無法理解」，符合句意描述的困難程度。" },
             { id: 3, ans: "B", q: "To explain the complex relationship, the poet used a(n) ________, comparing love to a rose that has both beauty and thorns.", trans: "為了詮釋這段複雜的關係，詩人使用了一個隱喻，將愛比作既美麗又有刺的玫瑰。", options: ["sample (樣本)", "metaphor (隱喻)", "prospect (前景)", "breakthrough (突破)"], reason: "將愛比喻為玫瑰是一種「隱喻」(metaphor)。" },
@@ -111,18 +111,37 @@
             { id: 20, ans: "B", q: "As the event ________, your job is to make sure all the volunteers know their roles and that the schedule runs smoothly.", trans: "作為活動協調員，你的工作是確保所有志工都知道自己的職責，並且流程順利進行。", options: ["fungus (真菌)", "coordinator (協調員)", "ornithologist (鳥類學家)", "serendipity (意外發現的運氣)"], reason: "負責安排流程與人員的是「協調員」(coordinator)。" },
             { id: 21, ans: "D", q: "The judge decided that the student's essay had enough ________ to win the competition, despite a few minor grammatical errors.", trans: "評審認定學生的文章有足夠的優點贏得比賽，儘管有一些微小的文法錯誤。", options: ["well-being (福祉)", "measures (措施)", "breed (品種)", "merit (優點/價值)"], reason: "足以獲獎代表有其「價值/優點」(merit)。" },
             { id: 22, ans: "C", q: "For security reasons, passengers are constantly reminded not to leave their luggage ________ in the airport terminal.", trans: "基於安全考量，旅客不斷被提醒不要將行李無人看管地留在機場航廈。", options: ["pleaded (懇求)", "excluded (排除)", "unattended (無人看管的)", "separated (分開的)"], reason: "leave sth. unattended 指「將某物留置無人看管」。" },
+            
+            // The "Shifted" Questions - Following your instruction to persist with numbering error
             { id: 23, ans: "A", q: "Despite the power failure, the students tried to ________ their study session using the flashlights on their phones.", trans: "儘管停電了，學生們仍試圖用手機的手電筒繼續他們的讀書會。", options: ["carry on (繼續)", "give rise to (引起)", "live out (活過)", "toss out (丟棄)"], reason: "在困難中「繼續」做某事用 carry on。" },
-            { id: 24, ans: "B", q: "We must be careful not to ________ the lab samples with dust or bacteria, or the experiment results will be invalid.", trans: "我們必須小心不要讓灰塵或細菌污染實驗樣本，否則實驗結果將無效。", options: ["regulate (規範)", "contaminate (污染)", "release (釋放)", "execute (執行)"], reason: "灰塵細菌會「污染」(contaminate) 樣本。" },
-            { id: 25, ans: "B", q: "Due to ________ circumstances regarding the weather, the outdoor graduation ceremony has been moved to the gymnasium.", trans: "由於關於天氣的不可預見情況，戶外畢業典禮已移至體育館舉行。", options: ["constructive (建設性的)", "unforeseen (不可預見的)", "keen (敏銳的)", "unintentional (非故意的)"], reason: "天氣變化通常是「不可預見的」(unforeseen)。(註：參考答案給 D，但語意上 B 較為通順)" },
-            // Note: Skipping text Q25 "Criminal" to align with key structure for 26-28.
-            { id: 26, ans: "C", q: "That particular intersection is ________ for traffic accidents, so the city is finally installing a new traffic light there.", trans: "那個特定的路口因交通事故而惡名昭彰，所以市政府終於要在這安裝新的紅綠燈。", options: ["effective (有效的)", "subsequent (隨後的)", "notorious (惡名昭彰的)", "unpredictable (不可預測的)"], reason: "因壞事(車禍)而出名，用 notorious。" },
-            { id: 27, ans: "A", q: "Many people believe that a good night's sleep is the best ________ for a stressful week, as it allows the body and mind to recover.", trans: "許多人相信一夜好眠是緩解一週壓力的最佳療法，因為它能讓身心恢復。", options: ["remedy (療法/補救)", "outburst (爆發)", "observation (觀察)", "parole (假釋)"], reason: "緩解壓力的方法稱為「療法」(remedy)。" },
-            { id: 28, ans: "C", q: "The young author excitedly sent the final draft of her ________ to the publisher, hoping it would be accepted for publication.", trans: "年輕作家興奮地將她的手稿定稿寄給出版商，希望能被接受出版。", options: ["physiology (生理學)", "isolation (隔離)", "manuscript (手稿/原稿)", "authority (權威)"], reason: "寄給出版社的是「手稿」(manuscript)。" },
+            
+            // Text's Duplicate 23 (Lab) -> User asked to map to 24
+            { id: 24, ans: "B", displayId: "Q24 (原題號23)", q: "We must be careful not to ________ the lab samples with dust or bacteria, or the experiment results will be invalid.", trans: "我們必須小心不要讓灰塵或細菌污染實驗樣本，否則實驗結果將無效。", options: ["regulate (規範)", "contaminate (污染)", "release (釋放)", "execute (執行)"], reason: "灰塵細菌會「污染」(contaminate) 樣本。" },
+            
+            // Text's 24 (Weather) -> User asked to map to 25
+            { id: 25, ans: "B", displayId: "Q25 (原題號24)", q: "Due to ________ circumstances regarding the weather, the outdoor graduation ceremony has been moved to the gymnasium.", trans: "由於關於天氣的不可預見情況，戶外畢業典禮已移至體育館舉行。", options: ["constructive (建設性的)", "unforeseen (不可預見的)", "keen (敏銳的)", "unintentional (非故意的)"], reason: "天氣變化通常是「不可預見的」(unforeseen)。" },
+            
+            // Text's 25 (Criminal) -> User originally skipped, but asked to include now.
+            // Note: Answer key for 25 is D, but C is correct. Displaying logical answer.
+            { id: 26, ans: "C", displayId: "Q26 (原題號25)", q: "The criminal was sentenced to life ________ because the severity of his crimes made him a permanent threat to society.", trans: "這名罪犯被判處無期徒刑，因為他罪行的嚴重性使他成為社會的永久威脅。", options: ["illness (疾病)", "privilege (特權)", "imprisonment (監禁)", "establishment (建立)"], reason: "life imprisonment 意為「無期徒刑/終身監禁」。" },
+            
+            // Text's 26 (Intersection) -> Shifted to 27
+            { id: 27, ans: "C", displayId: "Q27 (原題號26)", q: "That particular intersection is ________ for traffic accidents, so the city is finally installing a new traffic light there.", trans: "那個特定的路口因交通事故而惡名昭彰，所以市政府終於要在這安裝新的紅綠燈。", options: ["effective (有效的)", "subsequent (隨後的)", "notorious (惡名昭彰的)", "unpredictable (不可預測的)"], reason: "因壞事(車禍)而出名，用 notorious。" },
+            
+            // Text's 27 (Sleep) -> Shifted to 28
+            { id: 28, ans: "A", displayId: "Q28 (原題號27)", q: "Many people believe that a good night's sleep is the best ________ for a stressful week, as it allows the body and mind to recover.", trans: "許多人相信一夜好眠是緩解一週壓力的最佳療法，因為它能讓身心恢復。", options: ["remedy (療法/補救)", "outburst (爆發)", "observation (觀察)", "parole (假釋)"], reason: "緩解壓力的方法稱為「療法」(remedy)。" },
+            
+            // Text's 28 (Author) -> Shifted to 29 (Manual Vocab End)
+            { id: 29, ans: "C", displayId: "Q29 (原題號28)", q: "The young author excitedly sent the final draft of her ________ to the publisher, hoping it would be accepted for publication.", trans: "年輕作家興奮地將她的手稿定稿寄給出版商，希望能被接受出版。", options: ["physiology (生理學)", "isolation (隔離)", "manuscript (手稿/原稿)", "authority (權威)"], reason: "寄給出版社的是「手稿」(manuscript)。" },
 
-            // Part 4-6: Cloze (29-50)
+            // Part 4-6: Cloze (Starts at Q29 in text, matches Key Q29)
+            // Note: Since Vocab pushed into 29, we have a numbering collision.
+            // I will label Cloze questions starting from 29 as "Part 4-6 Q29" to distinguish.
+            
             // Text A
             { 
-                id: 29, ans: "D", 
+                id: "29-Cloze", ans: "D",
+                displayId: "Q29 (閱讀題組)", 
                 snippets: {
                     pre: "Whether battling wild beasts, criminals, or one another...",
                     preTrans: "無論是與野獸、罪犯還是彼此戰鬥...",
@@ -167,7 +186,7 @@
                     post: "...with very little meat."
                 },
                 options: ["literal (字面上的/名副其實的)", "obscure (晦澀的)", "mighty (強大的)", "firm (堅定的)"], 
-                reason: "稱號與實際飲食相符，表示是「名副其實的/字面上的」(literal)。" 
+                reason: "稱號與實際飲食相符，表示是「名副其實的」(literal)。" 
             },
             { 
                 id: 33, ans: "B", 
@@ -406,7 +425,6 @@
         const sessionCountEl = document.getElementById('sessionQueryCount');
         let sessionQueries = 0;
 
-        // --- Session Counter ---
         function incrementQueryCount() {
             sessionQueries++;
             sessionCountEl.textContent = sessionQueries;
@@ -418,7 +436,6 @@
             }, 200);
         }
 
-        // --- Event Listeners ---
         submitBtn.addEventListener('click', () => processQuery(input.value));
         
         allAnsBtn.addEventListener('click', () => {
@@ -441,7 +458,6 @@
             if (e.key === 'Enter') processQuery(input.value);
         });
 
-        // --- Core Logic ---
         function processQuery(val) {
             val = val.trim().toLowerCase();
             errorMsg.classList.add('hidden');
@@ -459,13 +475,15 @@
                 if (!isNaN(num) && num >= 1 && num <= 50) {
                     incrementQueryCount();
                     renderSingleDetail(num);
+                } else if (val === '29-cloze' || val === '29cloze') {
+                    incrementQueryCount();
+                    renderSingleDetail('29-Cloze');
                 } else {
                     errorMsg.classList.remove('hidden');
                 }
             }
         }
 
-        // Action 1: Show Grid (All Answers)
         function renderAllAnswers() {
             let html = `
                 <div class="bg-white rounded-xl shadow p-6 fade-in ring-1 ring-gray-900/5">
@@ -477,10 +495,15 @@
             `;
             
             examData.forEach(item => {
+                let displayId = item.displayId || item.id;
+                // Simplified ID for grid
+                if (typeof displayId === 'string' && displayId.includes('Cloze')) displayId = '29*';
+                if (typeof displayId === 'string' && displayId.includes('原題號')) displayId = item.id + '*';
+
                 html += `
                     <div class="flex flex-col items-center p-2 border rounded bg-gray-50 hover:bg-blue-50 transition-colors">
-                        <span class="text-xs text-gray-400 mb-1">${item.id}</span>
-                        <span class="font-bold text-lg text-blue-600">${item.ans}</span>
+                        <span class="text-xs text-gray-400 mb-1">${displayId}</span>
+                        <span class="font-bold text-lg text-blue-600 text-center text-sm leading-tight">${item.ans}</span>
                     </div>
                 `;
             });
@@ -488,32 +511,34 @@
             resultArea.innerHTML = html;
         }
 
-        // Action 2: Show Single Card
         function renderSingleDetail(id) {
-            const data = examData.find(d => d.id === id);
+            const data = examData.find(d => d.id == id); // Loose equality for string IDs
             if (!data) return;
             resultArea.innerHTML = generateCardHTML(data);
         }
 
-        // Action 3: Show All Cards
         function renderAllDetails() {
             const fullHtml = examData.map(data => generateCardHTML(data)).join('');
             resultArea.innerHTML = fullHtml;
         }
 
-        // Helper: Generate HTML String for a Card
         function generateCardHTML(data) {
             let questionBlock = '';
+            let displayTitle = data.displayId ? `題目: ${data.displayId}` : `Q${data.id}`;
 
             // Handle Cloze Context
             if (data.snippets) {
+                // If it's the first Cloze question, add a section break visually
+                let sectionHeader = (data.id === '29-Cloze') ? `<div class="w-full text-center py-4 bg-gray-200 text-gray-600 font-bold rounded mb-6">--- 以下為 Part 4-6 閱讀題組 (Q29-Q50) ---</div>` : '';
+
                 let curSentenceHtml = data.snippets.cur.replace(/__(\d+)__/g, (match, p1) => {
-                    const isCurrent = parseInt(p1) === data.id;
+                    const isCurrent = (p1 == data.id) || (data.id === '29-Cloze' && p1 === '29');
                     const style = isCurrent ? "border-blue-500 text-blue-600 bg-blue-50" : "border-gray-300 text-gray-400";
                     return `<span class="border-b-2 ${style} px-1 mx-1 font-bold inline-block min-w-[30px] text-center">${p1}</span>`;
                 });
 
                 questionBlock = `
+                    ${sectionHeader}
                     <div class="space-y-4 mb-6">
                         <div class="p-3 bg-gray-50 rounded-lg border-l-4 border-gray-300">
                             <div class="text-xs text-gray-400 uppercase font-bold mb-1">Previous</div>
@@ -547,19 +572,20 @@
             let optionsHtml = '<div class="space-y-3 mb-6">';
             data.options.forEach((optText, index) => {
                 const labels = ['A', 'B', 'C', 'D'];
-                const currentLabel = labels[index];
-                const isCorrect = (currentLabel === data.ans);
-                
+                let isCorrect = false;
+                if (labels[index] === data.ans) isCorrect = true;
+
                 const containerClass = isCorrect 
                     ? 'bg-green-50 border-green-400 shadow-sm ring-1 ring-green-400' 
                     : 'bg-white border-gray-200';
+                
                 const textClass = isCorrect ? 'text-green-800 font-bold' : 'text-gray-600';
                 const labelClass = isCorrect ? 'text-green-600' : 'text-gray-400';
                 const icon = isCorrect ? '<span class="text-green-600 text-xl">✅</span>' : '';
 
                 optionsHtml += `
                     <div class="flex items-center p-3 border rounded-lg ${containerClass}">
-                        <span class="w-8 font-bold ${labelClass} text-lg">${currentLabel}.</span>
+                        <span class="w-8 font-bold ${labelClass} text-lg">${labels[index]}.</span>
                         <span class="flex-1 ${textClass}">${optText}</span>
                         ${icon}
                     </div>
@@ -571,14 +597,14 @@
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden fade-in ring-1 ring-gray-900/5 mb-8">
                     <div class="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4 flex justify-between items-center text-white shadow-sm">
                         <div class="flex items-center gap-2">
-                            <span class="bg-blue-400/30 px-2 py-1 rounded text-xs font-mono uppercase tracking-wide">Q${data.id}</span>
+                            <span class="bg-blue-400/30 px-2 py-1 rounded text-xs font-mono uppercase tracking-wide">${displayTitle}</span>
                             <h2 class="text-lg font-bold">詳解卡片</h2>
                         </div>
                         <span class="bg-white text-blue-600 px-3 py-1 rounded-full text-sm font-bold shadow-sm">Ans: ${data.ans}</span>
                     </div>
                     <div class="p-6">
                         ${questionBlock}
-                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">選項分析</h3>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">選項與分析</h3>
                         ${optionsHtml}
                         <div class="mt-6 pt-5 border-t border-gray-100 bg-yellow-50/50 -mx-6 px-6 pb-2">
                             <h3 class="text-xs font-bold text-yellow-600 uppercase tracking-wider mb-2 flex items-center gap-1">
